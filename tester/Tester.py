@@ -12,8 +12,8 @@ class Tester:
     """
 
     __reportItem = """
-    {iterationName} - {result} - {seconds} сек
 
+    {iterationName} - {result} - {seconds} сек
     """
 
     __reportTrueDetails = """
@@ -35,6 +35,10 @@ class Tester:
         self.instance = instance
         self.lastreport = ''
         self.lastreportFile = None
+
+        self._reportItem = Tester.__reportItem
+        self._reportTrueDetails = Tester.__reportTrueDetails
+        self._reportFalseDetails = Tester.__reportFalseDetails
 
     def testdir(self, dirpath:str, reportpath:str):
         # Store current location
@@ -67,6 +71,15 @@ class Tester:
         # Set cwd back to current
         os.chdir(curdir)
 
+    def setupReportStrings(self, reportItem = None, reportTrueDetails = None, reportFalseDetails = None):
+        if (reportItem != None): self._reportItem = reportItem
+        if (reportTrueDetails != None): self._reportTrueDetails = reportTrueDetails
+        if (reportFalseDetails != None): self._reportFalseDetails = reportFalseDetails
+
+    def resetReportStrings(self, reportItem = None, reportTrueDetails = None, reportFalseDetails = None):
+        self._reportItem = Tester.__reportItem
+        self._reportTrueDetails = Tester.__reportTrueDetails
+        self._reportFalseDetails = Tester.__reportFalseDetails
 
     @staticmethod
     def __getFilenamesDict(dirAndFiles:list) -> list:
@@ -125,14 +138,14 @@ class Tester:
         self.lastreport = header
 
     def __appendReportItem(self, iterationName, testResult):
-        self.__appendPartStr(Tester.__reportItem
+        self.__appendPartStr(self._reportItem
                 .format(iterationName = iterationName, result = testResult['valid'], seconds = testResult['seconds']))
 
         if (testResult['valid'] == True):
-            self.__appendPartStr(Tester.__reportTrueDetails
+            self.__appendPartStr(self._reportTrueDetails
                 .format(**testResult))
         else:
-            self.__appendPartStr(Tester.__reportFalseDetails
+            self.__appendPartStr(self._reportFalseDetails
                 .format(**testResult))
 
     def __appendPartStr(self, part:str):
