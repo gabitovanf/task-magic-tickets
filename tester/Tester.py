@@ -16,8 +16,15 @@ class Tester:
 
     """
 
+    __reportTrueDetails = """
+    ----
+    Input: {input}
+    ----
+    """
+
     __reportFalseDetails = """
     ----
+    Input: {input}
     Expected: {expected}
     Computed: {computed}
     ----
@@ -90,7 +97,10 @@ class Tester:
         self.lastreport += (Tester.__reportItem
                 .format(iterationName = iterationName, result = testResult['valid'], seconds = testResult['seconds']))
 
-        if (testResult['valid'] == False):
+        if (testResult['valid'] == True):
+            self.lastreport += (Tester.__reportTrueDetails
+                .format(**testResult))
+        else:
             self.lastreport += (Tester.__reportFalseDetails
                 .format(**testResult))
 

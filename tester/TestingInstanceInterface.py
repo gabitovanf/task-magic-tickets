@@ -9,7 +9,7 @@ class TestingInstanceInterface:
         starttime = time.time()
         computed = self.compute(*input)
 
-        return { "valid": computed == output, "computed": computed, "expected": output, "seconds": time.time() - starttime }
+        return { "valid": computed == output, "computed": computed, "expected": output, "seconds": time.time() - starttime, "input": list(input) }
 
     def instanceClassName(self) -> str:
         pass
