@@ -9,6 +9,8 @@ class SolverTestingAdapter(TestingInstanceInterface):
         self.instanceOrClass = instanceOrClass
 
     def compute(self, *input) -> str:
+        print('Start with', input)
+
         try:
             firstInputVal = input[0]
             firstInputVal = int(firstInputVal)
@@ -20,11 +22,11 @@ class SolverTestingAdapter(TestingInstanceInterface):
         except AttributeError as e:
             computed = 'Instance or class passed is invalid: it must contain a method .compute(inputValue:int)'
             print(e)
-            
+
         except Exception as e:
             computed = 'Unknown exception occured'
             print(e)
-
+        print('End with', computed)
         return str(computed)
 
     def instanceClassName(self) -> str:

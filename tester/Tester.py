@@ -12,13 +12,14 @@ class Tester:
     """
 
     __reportItem = """
-    {iterationName} - {result} - {seconds}сек
+    {iterationName} - {result} - {seconds} сек
 
     """
 
     __reportTrueDetails = """
     ----
     Input: {input}
+    Solution: {computed}
     ----
     """
 
@@ -33,27 +34,33 @@ class Tester:
     def __init__(self, instance: TestingInstanceInterface):
         self.instance = instance
         self.lastreport = ''
+        self.lastreportFile = None
 
-    def testdir(self, dirpath:str):
+    def testdir(self, dirpath:str, reportpath:str):
         # Store current location
         curdir = os.getcwd()
 
-        os.chdir(dirpath)
-        self.__startNewReport(os.getcwd())
+        try:
+            self.__startNewReport(os.getcwd(), reportpath)
 
-        for filenamesDict in Tester.__getFilenamesDict(os.listdir()):
-            iterationName = filenamesDict['in'][0:-3]
-            fileContentDict = Tester.__readFiles(filenamesDict)
+            os.chdir(dirpath)
 
-            # Continue if in- or out- has not been found 
-            # or any other exeption raised
-            if (fileContentDict == None): continue
+            for filenamesDict in Tester.__getFilenamesDict(os.listdir()):
+                iterationName = filenamesDict['in'][0:-3]
+                fileContentDict = Tester.__readFiles(filenamesDict)
 
-            # Compute and compare result with out-file's content
-            testResult = self.instance.validate(output = fileContentDict['out'], *fileContentDict['in'])
+                # Continue if in- or out- has not been found 
+                # or any other exeption raised
+                if (fileContentDict == None): continue
 
-            self.__appendReportItem(iterationName, testResult)
+                # Compute and compare result with out-file's content
+                testResult = self.instance.validate(output = fileContentDict['out'], *fileContentDict['in'])
 
+                print(testResult)
+
+                self.__appendReportItem(iterationName, testResult)
+        finally:
+            self.__closeReport()
 
         print(self.lastreport)
 
@@ -89,19 +96,53 @@ class Tester:
 
         return fileContentDict
 
-    def __startNewReport(self, dirpath:str):
+    @staticmethod
+    def __openNewReportFile(reportpath:str):
+        curdir = os.getcwd()
+        reportdir = os.path.dirname(reportpath)
+        reportdirLength = len(reportdir)
+        reportfile = reportpath[reportdirLength+1:]
+
+        os.chdir(reportdir)
+
+        f = open(reportfile, 'w') # change to 'w'
+
+        print(f)
+
+        os.chdir(curdir)
+
+        return f
+
+
+    def __startNewReport(self, dirpath:str, reportpath:str):
+        self.lastreportFile = Tester.__openNewReportFile(reportpath)
+
         className = self.instance.instanceClassName()
-        self.lastreport = Tester.__reportHeader.format(className=className, dirpath=dirpath)
+        header = Tester.__reportHeader.format(className=className, dirpath=dirpath)
+
+        # Start write
+        self.lastreportFile.write(header)
+        self.lastreport = header
 
     def __appendReportItem(self, iterationName, testResult):
-        self.lastreport += (Tester.__reportItem
+        self.__appendPartStr(Tester.__reportItem
                 .format(iterationName = iterationName, result = testResult['valid'], seconds = testResult['seconds']))
 
         if (testResult['valid'] == True):
-            self.lastreport += (Tester.__reportTrueDetails
+            self.__appendPartStr(Tester.__reportTrueDetails
                 .format(**testResult))
         else:
-            self.lastreport += (Tester.__reportFalseDetails
+            self.__appendPartStr(Tester.__reportFalseDetails
                 .format(**testResult))
 
+    def __appendPartStr(self, part:str):
+        self.lastreportFile.write(part)
+        self.lastreport += part
+
+    def __closeReport(self):
+        if (self.lastreportFile == None):
+            return
+
+        self.lastreportFile.close()
+        self.lastreportFile = None
 
