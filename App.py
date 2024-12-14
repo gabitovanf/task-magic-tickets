@@ -40,7 +40,8 @@ tester0.setupReportStrings(reportTrueDetails = reportTrueDetails, reportFalseDet
 tester1.setupReportStrings(reportTrueDetails = reportTrueDetails, reportFalseDetails = reportFalseDetails)
 tester2.setupReportStrings(reportTrueDetails = reportTrueDetails, reportFalseDetails = reportFalseDetails)
 
-tester0.testdir('./tests/1.Tickets', './report/1.Tickets.report.SumMatricesSolver.01.txt')
-# tester1.testdir('./tests/1.Tickets', './report/1.Tickets.report.LookOverSolver.m1.01.txt')
+# tester0.testdir('./tests/1.Tickets', './report/1.Tickets.report.SumMatricesSolver.01.txt')
+tester1.testdir('./tests/1.Tickets', './report/1.Tickets.report.LookOverSolver.m1.01.txt')
 # tester2.testdir('./tests/1.Tickets', './report/1.Tickets.report.LookOverSolver.m2.02.txt')
+# tester0.testdir('./tests/one', './TEMP.txt')
 
